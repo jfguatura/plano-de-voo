@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Estimativa de Tempo de Voo</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="left-panel">
+      <h1>Estimativa de tempo de voo</h1>
+      <h2>Gabinete Pessoal do Presidente da República</h2>
+      <p id="data-atualizacao">Data de atualização: carregando...</p>
+
+      <label for="aeronave">Aeronave:</label>
+      <select id="aeronave">
+        <option value="850">VC-1 ou VC-2 (850 km/h)</option>
+        <option value="250">VH-36 Caracal (250 km/h)</option>
+        <option value="900">Jato Executivo (900 km/h)</option>
+        <option value="custom">Personalizado</option>
+      </select>
+      <input type="number" id="velocidade-personalizada" placeholder="Velocidade (km/h)" style="display:none;">
+
+      <label for="municipio-origem">Município de Origem:</label>
+      <select id="municipio-origem"></select>
+
+      <label for="aeroporto-origem">Aeroporto de Origem:</label>
+      <select id="aeroporto-origem"></select>
+
+      <label for="municipio-destino">Município de Destino:</label>
+      <select id="municipio-destino"></select>
+
+      <label for="aeroporto-destino">Aeroporto de Destino:</label>
+      <select id="aeroporto-destino"></select>
+
+      <button id="calcular">Calcular Trajeto</button>
+      <button id="exportar-pdf">Exportar Mapa em PDF</button>
+    </div>
+
+    <div class="right-panel">
+      <div id="map"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
