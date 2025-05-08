@@ -117,53 +117,97 @@ function calcularDistancia(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
-function calcularTrajeto() {
-  const codOrigem = document.getElementById("aeroporto-origem").value;
-  const codDestino = document.getElementById("aeroporto-destino").value;
-  const tipoVel = document.getElementById("aeronave").value;
-  const velCustom = document.getElementById("velocidade-personalizada").value;
+// Aguarda o carregamento completo do DOM
+document.addEventListener('DOMContentLoaded', function () {
+  // Adiciona o listener ao botão "Calcular Trajeto"
+  document.getElementById('calcular').addEventListener('click', function () {
+    console.log('Botão clicado');
+    calcularTrajeto();
+  });
 
-  const origem = obterAeroportoPorCodigo(codOrigem);
-  const destino = obterAeroportoPorCodigo(codDestino);
-  const velocidade = tipoVel === "custom" ? parseFloat(velCustom) : parseFloat(tipoVel);
+  // Função para calcular o trajeto entre os aeroportos
+  function calcularTrajeto() {
+    const codOrigem = document.getElementById("aeroporto-origem").value;
+    const codDestino = document.getElementById("aeroporto-destino").value;
+    const tipoVel = document.getElementById("aeronave").value;
+    const velCustom = document.getElementById("velocidade-personalizada").value;
 
-  if (!origem || !destino) {
-    alert("Por favor, selecione aeroportos de origem e destino válidos.");
-    return;
+    const origem = obterAeroportoPorCodigo(codOrigem);
+    const destino = obterAeroportoPorCodigo(codDestino);
+    const velocidade = tipoVel === "custom" ? parseFloat(velCustom) : parseFloat(tipoVel);
+
+    // Verifica se os aeroportos de origem e destino são válidos
+    if (!origem || !destino) {
+      alert("Por favor, selecione aeroportos de origem e destino válidos.");
+      return;
+    }
+
+    // Verifica se a velocidade é válida
+    if (isNaN(velocidade) || velocidade <= 0) {
+      alert("Por favor, informe uma velocidade válida.");
+      return;
+    }
+
+    // Calcula a distância entre os aeroportos
+    const dist = calcularDistancia(origem.latitude, origem.longitude, destino.latitude, destino.longitude);
+    const tempo = dist / velocidade;
+
+    // Remove marcadores anteriores do mapa
+    marcadores.forEach(m => mapa.removeLayer(m));
+    marcadores = [];
+
+    // Adiciona marcadores para origem e destino no mapa
+    const marcadorOrigem = L.marker([origem.latitude, origem.longitude])
+      .bindPopup(gerarPopup(origem))
+      .addTo(mapa);
+    const marcadorDestino = L.marker([destino.latitude, destino.longitude])
+      .bindPopup(gerarPopup(destino))
+      .addTo(mapa);
+    marcadores.push(marcadorOrigem, marcadorDestino);
+
+    // Desenha a linha do voo
+    if (linhaVoo) mapa.removeLayer(linhaVoo);
+    linhaVoo = L.polyline([
+      [origem.latitude, origem.longitude],
+      [destino.latitude, destino.longitude]
+    ], { color: 'red' }).addTo(mapa);
+
+    // Ajusta o mapa para mostrar a linha de voo
+    mapa.fitBounds(linhaVoo.getBounds());
+
+    // Exibe um popup com a distância e tempo estimado de voo
+    linhaVoo.bindPopup(
+      `<strong>Distância:</strong> ${dist.toFixed(2)} km<br>
+       <strong>Tempo estimado:</strong> ${(tempo * 60).toFixed(0)} min`
+    ).openPopup();
   }
 
-  if (isNaN(velocidade) || velocidade <= 0) {
-    alert("Por favor, informe uma velocidade válida.");
-    return;
+  // Função para obter informações do aeroporto por código
+  function obterAeroportoPorCodigo(codigo) {
+    // Suponha que você tenha uma lista ou banco de dados de aeroportos
+    return aeroportos.find(aeroporto => aeroporto.codigo === codigo);
   }
 
-  const dist = calcularDistancia(origem.latitude, origem.longitude, destino.latitude, destino.longitude);
-  const tempo = dist / velocidade;
+  // Função para calcular a distância entre dois pontos geográficos
+  function calcularDistancia(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Raio da Terra em km
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distância em km
+  }
 
-  marcadores.forEach(m => mapa.removeLayer(m));
-  marcadores = [];
+  // Função para gerar o popup para cada aeroporto
+  function gerarPopup(aeroporto) {
+    return `<strong>${aeroporto.nome}</strong><br>
+            Código: ${aeroporto.codigo}<br>
+            Localização: ${aeroporto.municipio}, ${aeroporto.uf}`;
+  }
+});
 
-  const marcadorOrigem = L.marker([origem.latitude, origem.longitude])
-    .bindPopup(gerarPopup(origem))
-    .addTo(mapa);
-  const marcadorDestino = L.marker([destino.latitude, destino.longitude])
-    .bindPopup(gerarPopup(destino))
-    .addTo(mapa);
-  marcadores.push(marcadorOrigem, marcadorDestino);
-
-  if (linhaVoo) mapa.removeLayer(linhaVoo);
-  linhaVoo = L.polyline([
-    [origem.latitude, origem.longitude],
-    [destino.latitude, destino.longitude]
-  ], { color: 'red' }).addTo(mapa);
-
-  mapa.fitBounds(linhaVoo.getBounds());
-
-  linhaVoo.bindPopup(
-    `<strong>Distância:</strong> ${dist.toFixed(2)} km<br>
-     <strong>Tempo estimado:</strong> ${(tempo * 60).toFixed(0)} min`
-  ).openPopup();
-}
 
 function exportarPDF() {
   const container = document.getElementById('container');
