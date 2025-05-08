@@ -8,7 +8,17 @@ let origemSelecionada, destinoSelecionada;
 async function carregarDados() {
   const resposta = await fetch('AerodromosPublicos.json');
   const dados = await resposta.json();
-  aeroportos = dados;
+
+  // Padronizar os campos do JSON
+  aeroportos = dados.map(a => ({
+    codigo_oaci: a["CódigoOACI"],
+    nome: a["Nome"],
+    municipio: a["Município"],
+    uf: a["UF"],
+    latitude: parseFloat(a["LatGeoPoint"]),
+    longitude: parseFloat(a["LonGeoPoint"]),
+    tipo: "Público" // ou derive de outro campo, se necessário
+  }));
 
   const dataArquivo = new Date(resposta.headers.get("last-modified") || Date.now());
   document.getElementById("data-atualizacao").textContent = `Data de atualização: ${dataArquivo.toLocaleDateString()}`;
