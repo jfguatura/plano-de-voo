@@ -2,29 +2,43 @@ let mapa;
 let aeroportos = [];
 let marcadores = [];
 let linhaVoo;
-let origemSelecionada, destinoSelecionada;
 
-// Função para carregar o JSON localmente
-async function carregarDados() {
-  const resposta = await fetch('AerodromosPublicos.json');
-  const dados = await resposta.json();
-
-  // Padronizar os campos do JSON
+async function carregarDadosAeroportos() {
+  const response = await fetch("AerodromosPublicos.json");
+  const dados = await response.json();
   aeroportos = dados.map(a => ({
     codigo_oaci: a["CódigoOACI"],
+    ciad: a["CIAD"],
     nome: a["Nome"],
     municipio: a["Município"],
     uf: a["UF"],
+    municipio_servido: a["MunicípioServido"],
+    uf_servido: a["UFSERVIDO"],
     latitude: parseFloat(a["LatGeoPoint"]),
     longitude: parseFloat(a["LonGeoPoint"]),
-    tipo: "Público" // ou derive de outro campo, se necessário
-  }));
-
-  const dataArquivo = new Date(resposta.headers.get("last-modified") || Date.now());
-  document.getElementById("data-atualizacao").textContent = `Data de atualização: ${dataArquivo.toLocaleDateString()}`;
+    latitude_gms: a["Latitude"],
+    longitude_gms: a["Longitude"],
+    altitude: a["Altitude"],
+    operacao_diurna: a["OperaçãoDiurna"],
+    operacao_noturna: a["OperaçãoNoturna"],
+    designacao1: a["Designação1"],
+    comprimento1: a["Comprimento1"],
+    largura1: a["Largura1"],
+    resistencia1: a["Resistência1"],
+    superficie1: a["Superfície1"],
+    designacao2: a["Designação2"],
+    comprimento2: a["Comprimento2"],
+    largura2: a["Largura2"],
+    resistencia2: a["Resistência2"],
+    superficie2: a["Superfície2"],
+    situacao: a["SITUAÇÃO"],
+    validade_registro: a["ValidadedoRegistro"],
+    portaria_registro: a["PortariadeRegistro"],
+    link_portaria: a["LinkPortaria"]
+  })).filter(a => a.latitude && a.longitude);
 
   inicializarMapa();
-  preencherMunicipios();
+  preencherSelects();
 }
 
 function inicializarMapa() {
@@ -33,67 +47,61 @@ function inicializarMapa() {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(mapa);
 
+  exibirTodosOsAeroportos();
+}
+
+function exibirTodosOsAeroportos() {
+  marcadores.forEach(m => mapa.removeLayer(m));
+  marcadores = [];
+
   aeroportos.forEach(aero => {
     if (aero.latitude && aero.longitude) {
+      const popupContent = gerarPopup(aero);
       const marcador = L.marker([aero.latitude, aero.longitude])
-        .bindPopup(`<strong>${aero.nome}</strong><br>
-                    Código OACI: ${aero.codigo_oaci}<br>
-                    Município: ${aero.municipio}<br>
-                    UF: ${aero.uf}<br>
-                    Tipo: ${aero.tipo}
-                   `)
+        .bindPopup(popupContent)
         .addTo(mapa);
       marcadores.push(marcador);
     }
   });
 }
 
-function preencherMunicipios() {
-  const municipiosOrigem = document.getElementById("municipio-origem");
-  const municipiosDestino = document.getElementById("municipio-destino");
-
-  const municipios = [...new Set(aeroportos.map(a => a.municipio))].sort();
-  municipios.forEach(m => {
-    const opt1 = new Option(m, m);
-    const opt2 = new Option(m, m);
-    municipiosOrigem.appendChild(opt1);
-    municipiosDestino.appendChild(opt2);
-  });
-
-  new Choices(municipiosOrigem, { searchEnabled: true });
-  new Choices(municipiosDestino, { searchEnabled: true });
-
-  municipiosOrigem.addEventListener('change', e => preencherAeroportos("origem", e.target.value));
-  municipiosDestino.addEventListener('change', e => preencherAeroportos("destino", e.target.value));
+function gerarPopup(aero) {
+  let conteudo = `<strong>${aero.nome}</strong><br>`;
+  for (const [chave, valor] of Object.entries(aero)) {
+    if (valor && chave !== 'latitude' && chave !== 'longitude' && chave !== 'nome') {
+      const chaveFormatada = chave.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      conteudo += `<strong>${chaveFormatada}:</strong> ${valor}<br>`;
+    }
+  }
+  return conteudo;
 }
 
-function preencherAeroportos(tipo, municipio) {
-  const seletor = tipo === "origem" ? "aeroporto-origem" : "aeroporto-destino";
-  const select = document.getElementById(seletor);
-  select.innerHTML = "";
+function preencherSelects() {
+  const origemSelect = document.getElementById("aeroporto-origem");
+  const destinoSelect = document.getElementById("aeroporto-destino");
 
-  const filtrados = aeroportos.filter(a => a.municipio === municipio);
-  filtrados.forEach(a => {
-    const opt = new Option(`${a.nome} (${a.codigo_oaci})`, a.codigo_oaci);
-    select.appendChild(opt);
+  aeroportos.forEach(aero => {
+    const label = `${aero.nome} - ${aero.municipio}/${aero.uf} (${aero.codigo_oaci})`;
+    const option = new Option(label, aero.codigo_oaci);
+    origemSelect.add(option.cloneNode(true));
+    destinoSelect.add(option.cloneNode(true));
   });
+}
 
-  new Choices(select, { searchEnabled: true });
+function obterAeroportoPorCodigo(codigo) {
+  return aeroportos.find(a => a.codigo_oaci === codigo);
 }
 
 function calcularDistancia(lat1, lon1, lat2, lon2) {
   const R = 6371; // km
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const a =
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   return R * c;
-}
-
-function obterAeroportoPorCodigo(codigo) {
-  return aeroportos.find(a => a.codigo_oaci === codigo);
 }
 
 function calcularTrajeto() {
@@ -107,6 +115,17 @@ function calcularTrajeto() {
 
   const dist = calcularDistancia(origem.latitude, origem.longitude, destino.latitude, destino.longitude);
   const tempo = dist / velocidade;
+
+  marcadores.forEach(m => mapa.removeLayer(m));
+  marcadores = [];
+
+  const marcadorOrigem = L.marker([origem.latitude, origem.longitude])
+    .bindPopup(gerarPopup(origem))
+    .addTo(mapa);
+  const marcadorDestino = L.marker([destino.latitude, destino.longitude])
+    .bindPopup(gerarPopup(destino))
+    .addTo(mapa);
+  marcadores.push(marcadorOrigem, marcadorDestino);
 
   if (linhaVoo) mapa.removeLayer(linhaVoo);
   linhaVoo = L.polyline([
@@ -122,11 +141,4 @@ function calcularTrajeto() {
   ).openPopup();
 }
 
-document.getElementById("aeronave").addEventListener("change", e => {
-  const input = document.getElementById("velocidade-personalizada");
-  input.style.display = e.target.value === "custom" ? "block" : "none";
-});
-
-document.getElementById("calcular").addEventListener("click", calcularTrajeto);
-
-document.addEventListener("DOMContentLoaded", carregarDados);
+carregarDadosAeroportos();
