@@ -9,11 +9,11 @@ async function carregarDadosAeroportos() {
   aeroportos = dados.map(a => ({
     codigo_oaci: a["CódigoOACI"],
     ciad: a["CIAD"],
-    nome: a["Nome"],
+    nome: a["Nome"],      
     municipio: a["Município"],
     uf: a["UF"],
     municipio_servido: a["MunicípioServido"],
-    uf_servido: a["UFSERVIDO"],
+    uf_servido: a["UFSERVIDO"],  
     latitude: parseFloat(a["LatGeoPoint"]),
     longitude: parseFloat(a["LonGeoPoint"]),
     latitude_gms: a["Latitude"],
