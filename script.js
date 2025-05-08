@@ -9,11 +9,11 @@ async function carregarDadosAeroportos() {
   aeroportos = dados.map(a => ({
     codigo_oaci: a["CódigoOACI"],
     ciad: a["CIAD"],
-    nome: a["Nome"],      
+    nome: a["Nome"],
     municipio: a["Município"],
     uf: a["UF"],
     municipio_servido: a["MunicípioServido"],
-    uf_servido: a["UFSERVIDO"],  
+    uf_servido: a["UFSERVIDO"],
     latitude: parseFloat(a["LatGeoPoint"]),
     longitude: parseFloat(a["LonGeoPoint"]),
     latitude_gms: a["Latitude"],
@@ -47,10 +47,8 @@ function inicializarMapa() {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(mapa);
 
-  // Exibe os aeroportos apenas depois do mapa estar pronto
-  setTimeout(exibirTodosOsAeroportos, 500);  // Aguarda meio segundo antes de exibir os marcadores
+  exibirTodosOsAeroportos();
 }
-
 
 function exibirTodosOsAeroportos() {
   marcadores.forEach(m => mapa.removeLayer(m));
@@ -79,21 +77,19 @@ function gerarPopup(aero) {
 }
 
 function preencherMunicipios() {
-  const listaMunicipios = [...new Set(aeroportos
-    .map(a => a.municipio)
-    .filter(m => m && m.trim() !== "")
-  )].sort((a, b) => a.localeCompare(b));
-
-  console.log("Lista de Municípios:", listaMunicipios); // Verificar se a lista de municípios está sendo gerada corretamente
+  const municipiosOrigem = [...new Set(aeroportos.map(a => a.municipio))].sort();
+  const municipiosDestino = [...new Set(aeroportos.map(a => a.municipio))].sort();
 
   const selectOrigem = document.getElementById("municipio-origem");
   const selectDestino = document.getElementById("municipio-destino");
 
-  listaMunicipios.forEach(m => {
-    const optionOrigem = new Option(m, m);
-    const optionDestino = new Option(m, m);
-    selectOrigem.add(optionOrigem);
-    selectDestino.add(optionDestino);
+  municipiosOrigem.forEach(m => {
+    const option = new Option(m, m);
+    selectOrigem.add(option);
+  });
+  municipiosDestino.forEach(m => {
+    const option = new Option(m, m);
+    selectDestino.add(option);
   });
 
   selectOrigem.addEventListener("change", () => filtrarAeroportosPorMunicipio("origem"));
@@ -101,25 +97,18 @@ function preencherMunicipios() {
 }
 
 function filtrarAeroportosPorMunicipio(tipo) {
-  console.log("Municipio selecionado:", municipio);
-  const municipio = document.getElementById(`municipio-${tipo}`).value.trim().toLowerCase();
+  const municipio = document.getElementById(`municipio-${tipo}`).value;
   const selectAeroporto = document.getElementById(`aeroporto-${tipo}`);
 
+  // limpa opções anteriores
   selectAeroporto.innerHTML = "";
 
-  aeroportos
-    .filter(a => {
-    console.log("Comparando:", a.municipio.trim().toLowerCase(), "===", municipio);
-    return a.municipio.trim().toLowerCase() === municipio;
-    })
-    .filter(a => a.municipio.trim().toLowerCase() === municipio)
-    .forEach(aero => {
-      const label = `${aero.nome} - ${aero.municipio}/${aero.uf} (${aero.codigo_oaci})`;
-      const option = new Option(label, aero.codigo_oaci);
-      selectAeroporto.add(option);
-    });
+  aeroportos.filter(a => a.municipio === municipio).forEach(aero => {
+    const label = `${aero.nome} - ${aero.municipio}/${aero.uf} (${aero.codigo_oaci})`;
+    const option = new Option(label, aero.codigo_oaci);
+    selectAeroporto.add(option);
+  });
 }
-
 
 function obterAeroportoPorCodigo(codigo) {
   return aeroportos.find(a => a.codigo_oaci === codigo);
@@ -192,4 +181,4 @@ function exportarPDF() {
   });
 }
 
-carregarDadosAeroportos();
+carregarDadosAeroportos()
