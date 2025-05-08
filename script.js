@@ -38,7 +38,6 @@ async function carregarDadosAeroportos() {
   })).filter(a => a.latitude && a.longitude);
 
   inicializarMapa();
-  preencherSelects();
   preencherMunicipios();
 }
 
@@ -77,15 +76,37 @@ function gerarPopup(aero) {
   return conteudo;
 }
 
-function preencherSelects() {
-  const origemSelect = document.getElementById("aeroporto-origem");
-  const destinoSelect = document.getElementById("aeroporto-destino");
+function preencherMunicipios() {
+  const municipiosOrigem = [...new Set(aeroportos.map(a => a.municipio))].sort();
+  const municipiosDestino = [...new Set(aeroportos.map(a => a.municipio))].sort();
 
-  aeroportos.forEach(aero => {
+  const selectOrigem = document.getElementById("municipio-origem");
+  const selectDestino = document.getElementById("municipio-destino");
+
+  municipiosOrigem.forEach(m => {
+    const option = new Option(m, m);
+    selectOrigem.add(option);
+  });
+  municipiosDestino.forEach(m => {
+    const option = new Option(m, m);
+    selectDestino.add(option);
+  });
+
+  selectOrigem.addEventListener("change", () => filtrarAeroportosPorMunicipio("origem"));
+  selectDestino.addEventListener("change", () => filtrarAeroportosPorMunicipio("destino"));
+}
+
+function filtrarAeroportosPorMunicipio(tipo) {
+  const municipio = document.getElementById(`municipio-${tipo}`).value;
+  const selectAeroporto = document.getElementById(`aeroporto-${tipo}`);
+
+  // limpa opções anteriores
+  selectAeroporto.innerHTML = "";
+
+  aeroportos.filter(a => a.municipio === municipio).forEach(aero => {
     const label = `${aero.nome} - ${aero.municipio}/${aero.uf} (${aero.codigo_oaci})`;
     const option = new Option(label, aero.codigo_oaci);
-    origemSelect.add(option.cloneNode(true));
-    destinoSelect.add(option.cloneNode(true));
+    selectAeroporto.add(option);
   });
 }
 
@@ -142,22 +163,22 @@ function calcularTrajeto() {
   ).openPopup();
 }
 
-function preencherMunicipios() {
-  const municipioOrigem = document.getElementById("municipio-origem");
-  const municipioDestino = document.getElementById("municipio-destino");
+function exportarPDF() {
+  const container = document.getElementById('container');
 
-  // Extrair lista única de municípios
-  const municipiosUnicos = [...new Set(aeroportos.map(a => `${a.municipio} - ${a.uf}`))]
-    .filter(m => m && m !== "undefined - undefined")
-    .sort();
+  html2canvas(container).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'landscape' });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = pageWidth;
+    const imgHeight = canvas.height * pageWidth / canvas.width;
+    const yOffset = (pageHeight - imgHeight) / 2;
 
-  municipiosUnicos.forEach(mun => {
-    const option1 = new Option(mun, mun);
-    const option2 = new Option(mun, mun);
-    municipioOrigem.add(option1);
-    municipioDestino.add(option2);
+    pdf.addImage(imgData, 'PNG', 0, yOffset, imgWidth, imgHeight);
+    pdf.save("trajeto_aereo.pdf");
   });
 }
-
 
 carregarDadosAeroportos();
