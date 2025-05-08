@@ -101,20 +101,25 @@ function preencherMunicipios() {
 }
 
 function filtrarAeroportosPorMunicipio(tipo) {
-  const municipioSelecionado = document.getElementById(`municipio-${tipo}`).value.trim().toLowerCase();
+  console.log("Municipio selecionado:", municipio);
+  const municipio = document.getElementById(`municipio-${tipo}`).value.trim().toLowerCase();
   const selectAeroporto = document.getElementById(`aeroporto-${tipo}`);
 
-  // limpa opções anteriores
   selectAeroporto.innerHTML = "";
 
   aeroportos
-    .filter(a => a.municipio && a.municipio.trim().toLowerCase() === municipioSelecionado)
+    .filter(a => {
+    console.log("Comparando:", a.municipio.trim().toLowerCase(), "===", municipio);
+    return a.municipio.trim().toLowerCase() === municipio;
+    })
+    .filter(a => a.municipio.trim().toLowerCase() === municipio)
     .forEach(aero => {
       const label = `${aero.nome} - ${aero.municipio}/${aero.uf} (${aero.codigo_oaci})`;
       const option = new Option(label, aero.codigo_oaci);
       selectAeroporto.add(option);
     });
 }
+
 
 function obterAeroportoPorCodigo(codigo) {
   return aeroportos.find(a => a.codigo_oaci === codigo);
