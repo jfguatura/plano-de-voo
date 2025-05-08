@@ -1,17 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
   <meta charset="UTF-8">
   <title>Estimativa de Tempo de Voo</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+  <style>
+    /* Ajustes mínimos para garantir layout funcional caso o CSS externo falhe */
+    body, html { margin: 0; padding: 0; height: 100%; font-family: Arial, sans-serif; }
+    .container { display: flex; height: 100vh; }
+    .left-panel { width: 35%; padding: 20px; overflow-y: auto; background: #f5f5f5; box-shadow: 2px 0 5px rgba(0,0,0,0.1); }
+    .right-panel { flex-grow: 1; }
+    #map { height: 100%; width: 100%; }
+    label, select, input, button { display: block; margin: 10px 0; width: 100%; }
+  </style>
 </head>
 <body>
   <div class="container">
     <div class="left-panel">
-      <h1>Estimativa de tempo de voo</h1>
+      <h1>Estimativa de Tempo de Voo</h1>
       <h2>Gabinete Pessoal do Presidente da República</h2>
       <p id="data-atualizacao">Data de atualização: carregando...</p>
 
@@ -45,8 +54,11 @@
     </div>
   </div>
 
+  <!-- Scripts -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
