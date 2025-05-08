@@ -8,13 +8,42 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
   <style>
-    /* Ajustes mínimos para garantir layout funcional caso o CSS externo falhe */
-    body, html { margin: 0; padding: 0; height: 100%; font-family: Arial, sans-serif; }
-    .container { display: flex; height: 100vh; }
-    .left-panel { width: 35%; padding: 20px; overflow-y: auto; background: #f5f5f5; box-shadow: 2px 0 5px rgba(0,0,0,0.1); }
-    .right-panel { flex-grow: 1; }
-    #map { height: 100%; width: 100%; }
-    label, select, input, button { display: block; margin: 10px 0; width: 100%; }
+    body, html {
+      margin: 0; padding: 0; height: 100%;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+    .left-panel {
+      width: 35%;
+      padding: 20px;
+      overflow-y: auto;
+      background: #f5f5f5;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+    .right-panel {
+      flex-grow: 1;
+    }
+    #map {
+      height: 100%; width: 100%;
+    }
+    label, select, input, button {
+      display: block;
+      margin: 10px 0;
+      width: 100%;
+    }
+    button {
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
@@ -31,6 +60,7 @@
         <option value="900">Jato Executivo (900 km/h)</option>
         <option value="custom">Personalizado</option>
       </select>
+
       <input type="number" id="velocidade-personalizada" placeholder="Velocidade (km/h)" style="display:none;">
 
       <label for="municipio-origem">Município de Origem:</label>
