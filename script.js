@@ -47,8 +47,10 @@ function inicializarMapa() {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(mapa);
 
-  exibirTodosOsAeroportos();
+  // Exibe os aeroportos apenas depois do mapa estar pronto
+  setTimeout(exibirTodosOsAeroportos, 500);  // Aguarda meio segundo antes de exibir os marcadores
 }
+
 
 function exibirTodosOsAeroportos() {
   marcadores.forEach(m => mapa.removeLayer(m));
@@ -82,6 +84,8 @@ function preencherMunicipios() {
     .filter(m => m && m.trim() !== "")
   )].sort((a, b) => a.localeCompare(b));
 
+  console.log("Lista de Municípios:", listaMunicipios); // Verificar se a lista de municípios está sendo gerada corretamente
+
   const selectOrigem = document.getElementById("municipio-origem");
   const selectDestino = document.getElementById("municipio-destino");
 
@@ -91,10 +95,6 @@ function preencherMunicipios() {
     selectOrigem.add(optionOrigem);
     selectDestino.add(optionDestino);
   });
-
-  selectOrigem.addEventListener("change", () => filtrarAeroportosPorMunicipio("origem"));
-  selectDestino.addEventListener("change", () => filtrarAeroportosPorMunicipio("destino"));
-}
 
   selectOrigem.addEventListener("change", () => filtrarAeroportosPorMunicipio("origem"));
   selectDestino.addEventListener("change", () => filtrarAeroportosPorMunicipio("destino"));
