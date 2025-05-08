@@ -77,37 +77,43 @@ function gerarPopup(aero) {
 }
 
 function preencherMunicipios() {
-  const municipiosOrigem = [...new Set(aeroportos.map(a => a.municipio))].sort();
-  const municipiosDestino = [...new Set(aeroportos.map(a => a.municipio))].sort();
+  const listaMunicipios = [...new Set(aeroportos
+    .map(a => a.municipio)
+    .filter(m => m && m.trim() !== "")
+  )].sort((a, b) => a.localeCompare(b));
 
   const selectOrigem = document.getElementById("municipio-origem");
   const selectDestino = document.getElementById("municipio-destino");
 
-  municipiosOrigem.forEach(m => {
-    const option = new Option(m, m);
-    selectOrigem.add(option);
-  });
-  municipiosDestino.forEach(m => {
-    const option = new Option(m, m);
-    selectDestino.add(option);
+  listaMunicipios.forEach(m => {
+    const optionOrigem = new Option(m, m);
+    const optionDestino = new Option(m, m);
+    selectOrigem.add(optionOrigem);
+    selectDestino.add(optionDestino);
   });
 
   selectOrigem.addEventListener("change", () => filtrarAeroportosPorMunicipio("origem"));
   selectDestino.addEventListener("change", () => filtrarAeroportosPorMunicipio("destino"));
 }
 
+  selectOrigem.addEventListener("change", () => filtrarAeroportosPorMunicipio("origem"));
+  selectDestino.addEventListener("change", () => filtrarAeroportosPorMunicipio("destino"));
+}
+
 function filtrarAeroportosPorMunicipio(tipo) {
-  const municipio = document.getElementById(`municipio-${tipo}`).value;
+  const municipioSelecionado = document.getElementById(`municipio-${tipo}`).value.trim().toLowerCase();
   const selectAeroporto = document.getElementById(`aeroporto-${tipo}`);
 
   // limpa opções anteriores
   selectAeroporto.innerHTML = "";
 
-  aeroportos.filter(a => a.municipio === municipio).forEach(aero => {
-    const label = `${aero.nome} - ${aero.municipio}/${aero.uf} (${aero.codigo_oaci})`;
-    const option = new Option(label, aero.codigo_oaci);
-    selectAeroporto.add(option);
-  });
+  aeroportos
+    .filter(a => a.municipio && a.municipio.trim().toLowerCase() === municipioSelecionado)
+    .forEach(aero => {
+      const label = `${aero.nome} - ${aero.municipio}/${aero.uf} (${aero.codigo_oaci})`;
+      const option = new Option(label, aero.codigo_oaci);
+      selectAeroporto.add(option);
+    });
 }
 
 function obterAeroportoPorCodigo(codigo) {
