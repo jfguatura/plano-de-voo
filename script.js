@@ -39,6 +39,7 @@ async function carregarDadosAeroportos() {
 
   inicializarMapa();
   preencherSelects();
+  preencherMunicipios();
 }
 
 function inicializarMapa() {
@@ -140,5 +141,23 @@ function calcularTrajeto() {
      <strong>Tempo estimado:</strong> ${(tempo * 60).toFixed(0)} min`
   ).openPopup();
 }
+
+function preencherMunicipios() {
+  const municipioOrigem = document.getElementById("municipio-origem");
+  const municipioDestino = document.getElementById("municipio-destino");
+
+  // Extrair lista única de municípios
+  const municipiosUnicos = [...new Set(aeroportos.map(a => `${a.municipio} - ${a.uf}`))]
+    .filter(m => m && m !== "undefined - undefined")
+    .sort();
+
+  municipiosUnicos.forEach(mun => {
+    const option1 = new Option(mun, mun);
+    const option2 = new Option(mun, mun);
+    municipioOrigem.add(option1);
+    municipioDestino.add(option2);
+  });
+}
+
 
 carregarDadosAeroportos();
