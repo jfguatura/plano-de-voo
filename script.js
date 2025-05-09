@@ -133,37 +133,36 @@ function calcularDistancia(lat1, lon1, lat2, lon2) {
 
 // Cálculo de tempo específico para o VC-2 (Embraer E-190)
 function calcularTempoVC2(distancia) {
-  const subidaDescida = 200; // km (100 km subida + 100 km descida)
+  const subidaDescida = 268; // km (132 km subida + 136 km descida)
   const cruzeiro = Math.max(0, distancia - subidaDescida);
 
-  const tempoSubidaDescida = subidaDescida / 500; // 500 km/h em subida/descida
-  const tempoCruzeiro = cruzeiro / 830; // 830 km/h em cruzeiro
+  const tempoSubidaDescida = subidaDescida / 537; // 537 km/h em subida/descida
+  const tempoCruzeiro = cruzeiro / 852; // 852 km/h em cruzeiro
 
   return tempoSubidaDescida + tempoCruzeiro;
 }
 
 // Cálculo de tempo específico para o VC-1 (Airbus A319)
 function calcularTempoVC1(distancia) {
-  const subidaDescida = 200;
+  const subidaDescida = 314;
   const cruzeiro = Math.max(0, distancia - subidaDescida);
 
-  const tempoSubidaDescida = subidaDescida / 480;
-  const tempoCruzeiro = cruzeiro / 840;
+  const tempoSubidaDescida = subidaDescida / 537;
+  const tempoCruzeiro = cruzeiro / 833;
 
   return tempoSubidaDescida + tempoCruzeiro;
 }
 
 // Cálculo de tempo específico para o KC-30 (Airbus A330)
 function calcularTempoKC30(distancia) {
-  const subidaDescida = 200;
+  const subidaDescida = 362;
   const cruzeiro = Math.max(0, distancia - subidaDescida);
 
-  const tempoSubidaDescida = subidaDescida / 520;
-  const tempoCruzeiro = cruzeiro / 875;
+  const tempoSubidaDescida = subidaDescida / 546;
+  const tempoCruzeiro = cruzeiro / 870;
 
   return tempoSubidaDescida + tempoCruzeiro;
 }
-
 
 // Aguarda o carregamento completo do DOM
 document.addEventListener('DOMContentLoaded', function () {
