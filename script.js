@@ -131,8 +131,48 @@ function calcularDistancia(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
+// Cálculo de tempo específico para o VC-2 (Embraer E-190)
+function calcularTempoVC2(distancia) {
+  const subidaDescida = 200; // km (100 km subida + 100 km descida)
+  const cruzeiro = Math.max(0, distancia - subidaDescida);
+
+  const tempoSubidaDescida = subidaDescida / 500; // 500 km/h em subida/descida
+  const tempoCruzeiro = cruzeiro / 830; // 830 km/h em cruzeiro
+
+  return tempoSubidaDescida + tempoCruzeiro;
+}
+
+// Cálculo de tempo específico para o VC-1 (Airbus A319)
+function calcularTempoVC1(distancia) {
+  const subidaDescida = 200;
+  const cruzeiro = Math.max(0, distancia - subidaDescida);
+
+  const tempoSubidaDescida = subidaDescida / 480;
+  const tempoCruzeiro = cruzeiro / 840;
+
+  return tempoSubidaDescida + tempoCruzeiro;
+}
+
+// Cálculo de tempo específico para o KC-30 (Airbus A330)
+function calcularTempoKC30(distancia) {
+  const subidaDescida = 200;
+  const cruzeiro = Math.max(0, distancia - subidaDescida);
+
+  const tempoSubidaDescida = subidaDescida / 520;
+  const tempoCruzeiro = cruzeiro / 875;
+
+  return tempoSubidaDescida + tempoCruzeiro;
+}
+
+
 // Aguarda o carregamento completo do DOM
 document.addEventListener('DOMContentLoaded', function () {
+  // Exibir/esconder campo de velocidade personalizada com base na escolha de aeronave
+  document.getElementById("aeronave").addEventListener("change", function () {
+    const tipo = this.value;
+    const customInput = document.getElementById("custom-speed-input");
+    customInput.style.display = tipo === "custom" ? "block" : "none";
+  }
   // Adiciona o listener ao botão "Calcular Trajeto"
   document.getElementById('calcular').addEventListener('click', function () {
     console.log('Botão clicado');
@@ -164,7 +204,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Calcula a distância entre os aeroportos
     const dist = calcularDistancia(origem.latitude, origem.longitude, destino.latitude, destino.longitude);
-    const tempo = dist / velocidade;
+    
+    // Cálculo de tempo com base na aeronave selecionada
+    let tempo;
+    if (tipoVel === "vc1") {
+      tempo = calcularTempoVC1(dist);
+    } else if (tipoVel === "vc2") {
+      tempo = calcularTempoVC2(dist);
+    } else if (tipoVel === "kc30") {
+      tempo = calcularTempoKC30(dist);
+    } else {
+      tempo = dist / velocidade;
+    }
 
     // Remove marcadores anteriores do mapa
     marcadores.forEach(m => mapa.removeLayer(m));
