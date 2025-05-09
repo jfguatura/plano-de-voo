@@ -189,10 +189,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // Ajusta o mapa para mostrar a linha de voo
     mapa.fitBounds(linhaVoo.getBounds());
 
-    // Exibe um popup com a distância e tempo estimado de voo
+    // Exibe um popup com a distância e tempo estimado de voo, com separador de milhar (e sem casas decimais) e o tempo estimado em horas e minutos
+    const horas = Math.floor(tempo);
+    const minutos = Math.round((tempo - horas) * 60);
+    const tempoFormatado = `${horas}h ${minutos}min`;
+    const distanciaFormatada = Math.round(dist).toLocaleString('pt-BR');
+
     linhaVoo.bindPopup(
-      `<strong>Distância:</strong> ${dist.toFixed(2)} km<br>
-       <strong>Tempo estimado:</strong> ${(tempo * 60).toFixed(0)} min`
+      `<strong>Distância:</strong> ${distanciaFormatada} km<br>
+       <strong>Tempo estimado:</strong> ${tempoFormatado}`
     ).openPopup();
   }
 
