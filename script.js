@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const origem = obterAeroportoPorCodigo(codOrigem);
     const destino = obterAeroportoPorCodigo(codDestino);
-    const velocidade = tipoVel === "custom" ? parseFloat(velCustom) : parseFloat(tipoVel);
+    const velocidade = tipoVel === "custom" ? parseFloat(velCustom) : null;
 
     // Verifica se os aeroportos de origem e destino são válidos
     if (!origem || !destino) {
