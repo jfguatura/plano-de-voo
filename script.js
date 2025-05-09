@@ -172,7 +172,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const tipo = this.value;
     const customInput = document.getElementById("custom-speed-input");
     customInput.style.display = tipo === "custom" ? "block" : "none";
-  }
+  });
+  
   // Adiciona o listener ao botão "Calcular Trajeto"
   document.getElementById('calcular').addEventListener('click', function () {
     console.log('Botão clicado');
@@ -257,19 +258,7 @@ document.addEventListener('DOMContentLoaded', function () {
   return aeroportos.find(aeroporto => aeroporto.codigo_oaci === codigo);
 }
 
-  // Função para calcular a distância entre dois pontos geográficos
-  function calcularDistancia(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Raio da Terra em km
-    const dLat = (lat2 - lat1) * (Math.PI / 180);
-    const dLon = (lon2 - lon1) * (Math.PI / 180);
-    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distância em km
-  }
-
- });
+});
 
 
 function exportarPDF() {
