@@ -167,7 +167,7 @@ function calcularTempoKC30(distancia) {
 
 // Aguarda o carregamento completo do DOM
 document.addEventListener('DOMContentLoaded', function () {
-  // Exibir/esconder campo de velocidade personalizada com base na escolha de aeronave
+  // Exibir e esconder campo de velocidade personalizada com base na escolha de aeronave
   document.getElementById("aeronave").addEventListener("change", function () {
     const tipo = this.value;
     const customInput = document.getElementById("custom-speed-input");
