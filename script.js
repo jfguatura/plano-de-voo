@@ -195,13 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return R * c; // Distância em km
   }
 
-  // Função para gerar o popup para cada aeroporto
-  function gerarPopup(aeroporto) {
-    return `<strong>${aeroporto.nome}</strong><br>
-            Código: ${aeroporto.codigo}<br>
-            Localização: ${aeroporto.municipio}, ${aeroporto.uf}`;
-  }
-});
+ });
 
 
 function exportarPDF() {
