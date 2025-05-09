@@ -197,11 +197,11 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    // Verifica se a velocidade é válida
-    if (isNaN(velocidade) || velocidade <= 0) {
-      alert("Por favor, informe uma velocidade válida.");
-      return;
-    }
+    // Verifica se a velocidade é válida (velocidade agora é um identificador de texto para aeronave)
+    // if (isNaN(velocidade) || velocidade <= 0) {
+    //   alert("Por favor, informe uma velocidade válida.");
+    //   return;
+    // }
 
     // Calcula a distância entre os aeroportos
     const dist = calcularDistancia(origem.latitude, origem.longitude, destino.latitude, destino.longitude);
