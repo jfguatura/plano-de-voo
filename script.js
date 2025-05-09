@@ -37,6 +37,24 @@ async function carregarDadosAeroportos() {
     link_portaria: a["LinkPortaria"]
   })).filter(a => !isNaN(a.latitude) && !isNaN(a.longitude));
 
+  async function mostrarDataAtualizacao() {
+  const response = await fetch("AerodromosPublicos.json", { method: 'HEAD' });
+  const dataModificacao = response.headers.get("Last-Modified");
+
+  if (dataModificacao) {
+    const data = new Date(dataModificacao);
+    const dataFormatada = data.toLocaleDateString('pt-BR', {
+      day: '2-digit', month: '2-digit', year: 'numeric'
+    });
+    document.getElementById("data-atualizacao").textContent =
+      `Data de atualização: ${dataFormatada}`;
+  } else {
+    document.getElementById("data-atualizacao").textContent =
+      `Data de atualização: não disponível`;
+  }
+}
+  
+  mostrarDataAtualizacao();
   inicializarMapa();
   preencherMunicipios();
 }
@@ -171,10 +189,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // Ajusta o mapa para mostrar a linha de voo
     mapa.fitBounds(linhaVoo.getBounds());
 
-    // Exibe um popup com a distância e tempo estimado de voo
+    // Exibe um popup com a distância e tempo estimado de voo, com separador de milhar (e sem casas decimais) e o tempo estimado em horas e minutos
+    const horas = Math.floor(tempo);
+    const minutos = Math.round((tempo - horas) * 60);
+    const tempoFormatado = `${horas}h ${minutos}min`;
+    const distanciaFormatada = Math.round(dist).toLocaleString('pt-BR');
+
     linhaVoo.bindPopup(
-      `<strong>Distância:</strong> ${dist.toFixed(2)} km<br>
-       <strong>Tempo estimado:</strong> ${(tempo * 60).toFixed(0)} min`
+      `<strong>Distância:</strong> ${distanciaFormatada} km<br>
+       <strong>Tempo estimado:</strong> ${tempoFormatado}`
     ).openPopup();
   }
 
