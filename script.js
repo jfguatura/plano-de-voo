@@ -179,10 +179,9 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // Função para obter informações do aeroporto por código
-  function obterAeroportoPorCodigo(codigo) {
-    // Suponha que você tenha uma lista ou banco de dados de aeroportos
-    return aeroportos.find(aeroporto => aeroporto.codigo === codigo);
-  }
+ function obterAeroportoPorCodigo(codigo) {
+  return aeroportos.find(aeroporto => aeroporto.codigo_oaci === codigo);
+}
 
   // Função para calcular a distância entre dois pontos geográficos
   function calcularDistancia(lat1, lon1, lat2, lon2) {
