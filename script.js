@@ -102,10 +102,6 @@ function filtrarAeroportosPorMunicipio(tipo) {
     });
 }
 
-function obterAeroportoPorCodigo(codigo) {
-  return aeroportos.find(a => a.codigo_oaci === codigo);
-}
-
 function calcularDistancia(lat1, lon1, lat2, lon2) {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
