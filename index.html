@@ -55,11 +55,17 @@
 
       <label for="aeronave">Aeronave:</label>
       <select id="aeronave">
-        <option value="700">VC-1 ou VC-2 (700 km/h)</option>
+        <option value="vc1">VC-1 (Airbus A319)</option>
+        <option value="vc2">VC-2 (Embraer E-190)</option>
+        <option value="kc30">KC-30 (Airbus A330)</option>
         <option value="custom">Personalizado</option>
       </select>
 
-      <input type="number" id="velocidade-personalizada" placeholder="Velocidade (km/h)" style="display:none;">
+      <div id="custom-speed-input" style="display: none;">
+        <label for="velocidade-personalizada">Velocidade de cruzeiro (km/h):</label>
+        <input type="number" id="velocidade-personalizada" min="100" step="10">
+      </div>
+
 
       <label for="municipio-origem">Município de Origem:</label>
       <select id="municipio-origem"></select>
