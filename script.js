@@ -37,6 +37,24 @@ async function carregarDadosAeroportos() {
     link_portaria: a["LinkPortaria"]
   })).filter(a => !isNaN(a.latitude) && !isNaN(a.longitude));
 
+  async function mostrarDataAtualizacao() {
+  const response = await fetch("AerodromosPublicos.json", { method: 'HEAD' });
+  const dataModificacao = response.headers.get("Last-Modified");
+
+  if (dataModificacao) {
+    const data = new Date(dataModificacao);
+    const dataFormatada = data.toLocaleDateString('pt-BR', {
+      day: '2-digit', month: '2-digit', year: 'numeric'
+    });
+    document.getElementById("data-atualizacao").textContent =
+      `Data de atualização: ${dataFormatada}`;
+  } else {
+    document.getElementById("data-atualizacao").textContent =
+      `Data de atualização: não disponível`;
+  }
+}
+  
+  mostrarDataAtualizacao();
   inicializarMapa();
   preencherMunicipios();
 }
